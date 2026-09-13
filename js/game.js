@@ -364,6 +364,11 @@ function pauseGame(){
   hideAllOverlays();
   document.getElementById('pausemenu').classList.add('show');
   document.getElementById('pauseTitle').textContent='ПАУЗА';
+  // Показать кнопки паузы, скрыть кнопку настроек
+  document.getElementById('resumeBtn').style.display='inline-block';
+  document.getElementById('restartBtn').style.display='inline-block';
+  document.getElementById('quitBtn').style.display='inline-block';
+  document.getElementById('settingsButtons').style.display='none';
   Music.stop();
   syncSettingsUI();
 }
@@ -379,14 +384,30 @@ function openSettingsFromMenu(){
   hideAllOverlays();
   document.getElementById('pausemenu').classList.add('show');
   syncSettingsUI();
+  // Скрыть кнопки паузы, показать кнопку возврата
+  document.getElementById('resumeBtn').style.display='none';
+  document.getElementById('restartBtn').style.display='none';
+  document.getElementById('quitBtn').style.display='none';
+  document.getElementById('settingsButtons').style.display='block';
 }
 function closeSettings(){
   hideAllOverlays();
-  state='paused';
-  document.getElementById('pauseTitle').textContent='ПАУЗА';
-  document.getElementById('pausemenu').classList.add('show');
+  state='menu';
+  showMenu();
+  if(actx)Music.start();
+}
+function backToMenuFromSettings(){
+  hideAllOverlays();
+  state='menu';
+  showMenu();
+  if(actx)Music.start();
 }
 function quitToMenu(){
+  // Восстановить кнопки паузы перед возвратом в меню
+  document.getElementById('resumeBtn').style.display='inline-block';
+  document.getElementById('restartBtn').style.display='inline-block';
+  document.getElementById('quitBtn').style.display='inline-block';
+  document.getElementById('settingsButtons').style.display='none';
   hideAllOverlays();
   state='menu';
   showMenu();
@@ -394,6 +415,11 @@ function quitToMenu(){
 }
 function restartGame(){
   const charKey=player?player.charKey:'shooter';
+  // Восстановить кнопки паузы перед рестартом
+  document.getElementById('resumeBtn').style.display='inline-block';
+  document.getElementById('restartBtn').style.display='inline-block';
+  document.getElementById('quitBtn').style.display='inline-block';
+  document.getElementById('settingsButtons').style.display='none';
   hideAllOverlays();
   ngPlusLevel=0;
   dailyMode=false;
@@ -426,11 +452,22 @@ function triggerVictory(){
   updateAchProgress('victories',totalStats.victories);updateAchProgress('ngmax',totalStats.ngMax);
   if(dailyMode)recordDailyScore(player.charKey,Math.floor(gameTime),wave,kills);else recordScore(player.charKey,Math.floor(gameTime),wave,kills);
   document.getElementById('vtime').textContent=fmtTime(gameTime);document.getElementById('vlvl').textContent=player.level;document.getElementById('vkills').textContent=kills;document.getElementById('vcredits').textContent='+'+earned;document.getElementById('vng').textContent=ngPlusLevel;
+  // Восстановить кнопки перед победой
+  document.getElementById('resumeBtn').style.display='inline-block';
+  document.getElementById('restartBtn').style.display='inline-block';
+  document.getElementById('quitBtn').style.display='inline-block';
+  document.getElementById('settingsButtons').style.display='none';
   state='victory';hideAllOverlays();document.getElementById('victory').classList.add('show');
   setTimeout(()=>showRunReport(true),500);
 }
 function startNGPlus(){ngPlusLevel++;hideAllOverlays();showCharSelect();}
-function gameOver(){state='gameover';joy.active=false;const best=parseInt(localStorage.getItem('neon_best')||'0');const t=Math.floor(gameTime);if(t>best)localStorage.setItem('neon_best',t);totalStats.kills+=kills;totalStats.time+=t;totalStats.bosses+=bossKills;saveAchievements();if(dailyMode)recordDailyScore(player.charKey,t,wave,kills);else recordScore(player.charKey,t,wave,kills);const earned=calcCredits()*(achUnlocked['ng3']?2:1);credits+=earned;saveCredits();document.getElementById('gcredits').textContent='+'+earned;document.getElementById('stime').textContent=fmtTime(t);document.getElementById('swave').textContent=wave;document.getElementById('slvl').textContent=player?player.level:1;document.getElementById('skills').textContent=kills;document.getElementById('best').textContent=fmtTime(Math.max(best,t));document.getElementById('scombo').textContent=comboMax;hideAllOverlays();document.getElementById('gameover').classList.add('show');setTimeout(()=>showRunReport(false),500);}
+function gameOver(){
+  // Восстановить кнопки перед game over
+  document.getElementById('resumeBtn').style.display='inline-block';
+  document.getElementById('restartBtn').style.display='inline-block';
+  document.getElementById('quitBtn').style.display='inline-block';
+  document.getElementById('settingsButtons').style.display='none';
+  state='gameover';joy.active=false;const best=parseInt(localStorage.getItem('neon_best')||'0');const t=Math.floor(gameTime);if(t>best)localStorage.setItem('neon_best',t);totalStats.kills+=kills;totalStats.time+=t;totalStats.bosses+=bossKills;saveAchievements();if(dailyMode)recordDailyScore(player.charKey,t,wave,kills);else recordScore(player.charKey,t,wave,kills);const earned=calcCredits()*(achUnlocked['ng3']?2:1);credits+=earned;saveCredits();document.getElementById('gcredits').textContent='+'+earned;document.getElementById('stime').textContent=fmtTime(t);document.getElementById('swave').textContent=wave;document.getElementById('slvl').textContent=player?player.level:1;document.getElementById('skills').textContent=kills;document.getElementById('best').textContent=fmtTime(Math.max(best,t));document.getElementById('scombo').textContent=comboMax;hideAllOverlays();document.getElementById('gameover').classList.add('show');setTimeout(()=>showRunReport(false),500);}
 function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');}
 function crash(err){console.error(err);document.getElementById('crashmsg').textContent=(err&&err.message)?err.message:'неизвестная ошибка';document.getElementById('crashbox').classList.add('show');}
 window.addEventListener('error',e=>{if(state==='playing')crash(e.error||e.message);});
@@ -596,6 +633,7 @@ document.getElementById('dailyBtn').onclick=()=>{initAudio();showDailyIntro();};
 document.getElementById('dailyStartBtn').onclick=()=>{initAudio();hideAllOverlays();showCharSelect();};
 document.getElementById('dailyBackBtn').onclick=()=>{dailyMode=false;hideAllOverlays();showMenu();};
 document.getElementById('setBtn').onclick=()=>{initAudio();openSettingsFromMenu();};
+document.getElementById('settingsBackBtn').onclick=()=>{sfx('select');backToMenuFromSettings();};
 document.getElementById('resumeBtn').onclick=resumeGame;
 document.getElementById('restartBtn').onclick=()=>{
   if(state!=='paused'&&state!=='gameover'&&state!=='victory')return;
