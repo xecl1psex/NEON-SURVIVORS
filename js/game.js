@@ -577,10 +577,6 @@ document.getElementById('retryBtn').onclick=()=>{
   if(state!=='gameover')return;
   ngPlusLevel=0;dailyMode=false;hideAllOverlays();showCharSelect();
 };
-document.getElementById('goMenuBtn').onclick=()=>{
-  if(state!=='gameover')return;
-  ngPlusLevel=0;dailyMode=false;hideAllOverlays();showMenu();
-};
 document.getElementById('achBtn').onclick=()=>{initAudio();showAchievements();};
 document.getElementById('achBackBtn').onclick=()=>{sfx('select');backFromAch();};
 document.getElementById('mktBtn').onclick=()=>{initAudio();showMarket();};
