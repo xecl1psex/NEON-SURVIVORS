@@ -316,6 +316,7 @@ function hideAllOverlays(){
   ['menu','market','charselect','achievements','levelup','perkmenu','pausemenu','gameover','victory','dailyintro'].forEach(id=>{
     document.getElementById(id).classList.remove('show');
   });
+  document.getElementById('abilities').classList.remove('show');
 }
 
 function makePlayer(charKey){const ch=CHARACTERS[charKey];
@@ -414,7 +415,7 @@ function gameOver(){state='gameover';joy.active=false;const best=parseInt(localS
 function fmtTime(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(Math.floor(s%60)).padStart(2,'0');}
 function crash(err){console.error(err);document.getElementById('crashmsg').textContent=(err&&err.message)?err.message:'неизвестная ошибка';document.getElementById('crashbox').classList.add('show');}
 window.addEventListener('error',e=>{if(state==='playing')crash(e.error||e.message);});
-function buildAbilitiesUI(){const c=document.getElementById('abilities');c.innerHTML='';ABILITIES.forEach(a=>{const s=document.createElement('div');s.className='aslot';s.id='ab_'+a.key;s.title=a.name;s.innerHTML=`<div class="cd"></div>${icon(a.icon,26)}<span class="cdtext"></span><span class="lvlreq">LVL ${a.unlockLvl}</span><span class="keyhint">SPACE</span>`;c.appendChild(s);});}
+function buildAbilitiesUI(){const c=document.getElementById('abilities');c.innerHTML='';ABILITIES.forEach(a=>{const s=document.createElement('div');s.className='aslot';s.id='ab_'+a.key;s.title=a.name;s.innerHTML=`<div class="cd"></div>${icon(a.icon,26)}<span class="cdtext"></span><span class="lvlreq">LVL ${a.unlockLvl}</span><span class="keyhint">SPACE</span>`;c.appendChild(s);});c.classList.add('show');}
 function updateAbilitiesUI(){if(!player)return;let anyReady=false;ABILITIES.forEach(a=>{const s=document.getElementById('ab_'+a.key);if(!s)return;const un=player.level>=a.unlockLvl,cd=abilityCooldowns[a.key]||0,ready=un&&cd<=0;if(ready)anyReady=true;s.classList.toggle('locked',!un);s.classList.toggle('ready',ready);s.classList.toggle('active',a.key==='shield'&&player.shieldTime>0);const cdEl=s.querySelector('.cd'),cdT=s.querySelector('.cdtext'),lr=s.querySelector('.lvlreq');const eff=a.cd*(player.abilityCdMult||1);if(!un){cdEl.style.setProperty('--cd','100%');cdT.textContent='';lr.style.display='block';}else{lr.style.display='none';if(cd>0){cdEl.style.setProperty('--cd',(cd/eff*100)+'%');cdT.textContent=Math.ceil(cd)+'s';}else{cdEl.style.setProperty('--cd','0%');cdT.textContent='';}}});document.getElementById('abilityBtn').classList.toggle('ready',anyReady);}
 function tryUseAbility(){if(!player||state!=='playing')return false;for(const a of ABILITIES){if(player.level<a.unlockLvl)continue;if((abilityCooldowns[a.key]||0)>0)continue;a.activate(player);abilityCooldowns[a.key]=a.cd*(player.abilityCdMult||1);return true;}return false;}
 function showUnlockToast(iconKey,text){document.getElementById('uticon').innerHTML=icon(iconKey,40);document.getElementById('uttext').textContent=text;document.getElementById('unlocktoast').classList.add('show');unlockToastTimer=2.5;sfx('unlock');}
