@@ -1,4 +1,3 @@
-
 :root{--pink:#ff2a6d;--cyan:#05d9e8;--yellow:#ffd319;--purple:#b967ff;--bg:#01012b;--bg2:#0d0221;--panel:rgba(13,2,33,.78);}
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%}
@@ -25,10 +24,18 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 .wslot .lvl{position:absolute;bottom:0;right:0;background:var(--bg2);color:var(--yellow);font-size:10px;padding:1px 5px;text-shadow:0 0 6px var(--yellow)}
 .wslot.evo{border-color:var(--yellow);color:var(--yellow);animation:evoGlow 2s infinite}
 @keyframes evoGlow{0%,100%{filter:drop-shadow(0 0 6px rgba(255,211,25,.6))}50%{filter:drop-shadow(0 0 16px rgba(255,211,25,1))}}
-#abilities{position:fixed;bottom:calc(12px + env(safe-area-inset-bottom));right:calc(12px + env(safe-area-inset-right));display:flex;gap:8px;align-items:flex-end}
-#abilities{display:none;}
-#abilities.show{display:flex;}
-#abilities{display:flex;gap:8px;align-items:flex-end}
+
+/* === СПОСОБНОСТИ (ИСПРАВЛЕНО: одно правило вместо четырёх) === */
+#abilities{
+  position:fixed;
+  bottom:calc(12px + env(safe-area-inset-bottom));
+  right:calc(12px + env(safe-area-inset-right));
+  display:none;
+  gap:8px;
+  align-items:flex-end;
+}
+#abilities.show{display:flex}
+
 .aslot{width:56px;height:56px;background:var(--panel);border:1px solid rgba(5,217,232,.4);display:flex;align-items:center;justify-content:center;position:relative;transition:all .2s;color:var(--cyan);clip-path:polygon(9px 0,100% 0,100% calc(100% - 9px),calc(100% - 9px) 100%,0 100%,0 9px);}
 .aslot.ready{border-color:var(--yellow);color:var(--yellow);animation:pulse 1.5s infinite}
 .aslot.active{border-color:var(--cyan)}
@@ -91,15 +98,27 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 .btn-purple:hover{background:var(--purple);color:var(--bg2);filter:drop-shadow(0 0 18px var(--purple))}
 .menu-buttons{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center}
 
-/* === ИСПРАВЛЕНИЕ: Кнопки паузы скрыты по умолчанию === */
+/* === ИСПРАВЛЕНО: кнопки паузы скрыты по умолчанию === */
+#resumeBtn,
 #restartBtn,
 #quitBtn{
   display:none!important;
 }
 
-#pausemenu.show #restartBtn,
-#pausemenu.show #quitBtn{
+/* Показываем ТОЛЬКО в состоянии паузы */
+body.state-paused #resumeBtn,
+body.state-paused #restartBtn,
+body.state-paused #quitBtn{
   display:inline-flex!important;
+}
+
+/* Двойная защита: во время игры эти кнопки не видны никогда */
+body.state-playing #resumeBtn,
+body.state-playing #restartBtn,
+body.state-playing #quitBtn{
+  display:none!important;
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
 
 .credits{font-family:'Orbitron';font-size:20px;font-weight:700;color:var(--yellow);text-shadow:0 0 12px var(--yellow);margin:6px 0;letter-spacing:2px;display:flex;align-items:center;gap:8px}
@@ -143,7 +162,7 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 #combo.break .mult{color:var(--pink)!important;text-shadow:0 0 20px var(--pink),0 0 50px var(--pink)}
 #combo.break .label{color:var(--pink)}
 .ach-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:18px;max-width:900px;max-height:480px;overflow-y:auto;padding:10px}
-.ach-card{padding:14px;position:relative;background:rgba(13,2,33,.85);border:1px solid rgba(5,217,232,.25);clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px;}
+.ach-card{padding:14px;position:relative;background:rgba(13,2,33,.85);border:1px solid rgba(5,217,232,.25);clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);}
 .ach-card.unlocked{border-color:var(--yellow);background:rgba(255,211,25,.07)}
 .ach-card .ach-icon{margin-bottom:6px;color:var(--cyan)}
 .ach-card.unlocked .ach-icon{color:var(--yellow)}
@@ -155,12 +174,12 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 .ach-card .ach-reward{font-size:10px;color:#76ff03;margin-top:5px}
 .ach-card .ach-check{position:absolute;top:8px;right:10px;font-size:16px;color:var(--yellow);text-shadow:0 0 8px var(--yellow)}
 .ach-card.locked-ach{opacity:.5}
-.ach-stats{margin-top:16px;padding:14px 18px;background:rgba(13,2,33,.85);border:1px solid rgba(5,217,232,.35);max-width:900px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px;}
+.ach-stats{margin-top:16px;padding:14px 18px;background:rgba(13,2,33,.85);border:1px solid rgba(5,217,232,.35);max-width:900px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);}
 .ach-stats h3{font-family:'Orbitron';color:var(--cyan);margin-bottom:8px;font-size:13px;letter-spacing:2px;text-shadow:0 0 8px var(--cyan)}
 .ach-stats .stat-row{display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:rgba(209,247,255,.6)}
 .ach-stats .stat-val{color:var(--yellow);font-weight:bold;text-shadow:0 0 6px var(--yellow)}
 .mkt-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;max-width:900px;max-height:52vh;overflow-y:auto;padding:8px;width:100%}
-.mkt-card{padding:12px 14px;background:rgba(13,2,33,.88);border:1px solid rgba(5,217,232,.3);display:flex;flex-direction:column;gap:6px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px;}
+.mkt-card{padding:12px 14px;background:rgba(13,2,33,.88);border:1px solid rgba(5,217,232,.3);display:flex;flex-direction:column;gap:6px;clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px);}
 .mkt-card.maxed{border-color:var(--yellow);background:rgba(255,211,25,.06)}
 .mkt-card .m-name{font-family:'Orbitron';font-size:12px;font-weight:700;color:#fff;letter-spacing:1px;display:flex;align-items:center;gap:8px}
 .mkt-card .m-name .mic{color:var(--cyan)}
@@ -171,14 +190,14 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 .mkt-buy{margin-top:auto;padding:7px 10px;font-family:'Orbitron';font-size:11px;font-weight:700;letter-spacing:1px;border:1px solid var(--yellow);color:var(--yellow);background:rgba(255,211,25,.08);cursor:pointer;touch-action:manipulation;clip-path:polygon(8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%,0 8px);}
 .mkt-buy:disabled{opacity:.35;cursor:not-allowed}
 .mkt-buy:not(:disabled):hover{background:var(--yellow);color:var(--bg2)}
-.settings-box{margin-top:14px;padding:18px 26px;background:rgba(13,2,33,.9);border:1px solid rgba(5,217,232,.4);min-width:420px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px;}
+.settings-box{margin-top:14px;padding:18px 26px;background:rgba(13,2,33,.9);border:1px solid rgba(5,217,232,.4);min-width:420px;clip-path:polygon(14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%,0 14px);}
 .settings-box h3{font-family:'Orbitron';color:var(--cyan);font-size:14px;letter-spacing:2px;margin-bottom:12px;text-shadow:0 0 8px var(--cyan)}
 .set-row{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:7px 0;font-size:13px;color:rgba(209,247,255,.8)}
 .set-row input[type=range]{width:160px;accent-color:var(--cyan);cursor:pointer}
 .set-row input[type=checkbox]{width:18px;height:18px;accent-color:var(--pink);cursor:pointer}
 .set-row select{background:var(--bg2);color:var(--cyan);border:1px solid rgba(5,217,232,.5);padding:3px 8px;font-family:inherit;cursor:pointer}
 .set-val{color:var(--yellow);min-width:36px;text-align:right}
-.board{margin-top:16px;padding:12px 20px;background:rgba(13,2,33,.7);border:1px solid rgba(255,42,109,.35);min-width:340px;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px;}
+.board{margin-top:16px;padding:12px 20px;background:rgba(13,2,33,.7);border:1px solid rgba(255,42,109,.35);min-width:340px;clip-path:polygon(10px 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%,0 10px);}
 .board h3{font-family:'Orbitron';color:var(--pink);font-size:13px;letter-spacing:2px;margin-bottom:8px;text-shadow:0 0 8px var(--pink)}
 .board .row{display:flex;justify-content:space-between;gap:16px;font-size:12px;padding:2px 0;color:rgba(209,247,255,.7);align-items:center}
 .board .row .pos{color:var(--yellow);width:20px}
