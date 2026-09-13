@@ -599,7 +599,7 @@ document.getElementById('quitBtn').onclick=()=>{
   if(state!=='paused'&&state!=='gameover'&&state!=='victory')return;
   quitToMenu();
 };
-document.getElementById('menuBtn')?.onclick=()=>{
+document.getElementById('menuBtn').onclick=()=>{
   if(state!=='paused'&&state!=='gameover'&&state!=='victory')return;
   quitToMenu();
 };
