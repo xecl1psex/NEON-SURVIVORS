@@ -993,8 +993,16 @@ document.getElementById('setBtn').onclick=()=>{initAudio();openSettingsFromMenu(
 document.getElementById('resumeBtn').onclick=resumeGame;
 document.getElementById('restartBtn').onclick=()=>{hideAllOverlays();restartGame();};
 document.getElementById('quitBtn').onclick=quitToMenu;
-document.getElementById('pauseBtn').onclick=()=>{if(state==='playing')pauseGame();};
-document.getElementById('abilityBtn').addEventListener('pointerdown',e=>{e.preventDefault();initAudio();tryUseAbility();});
+document.getElementById('pauseBtn').onclick=()=>{
+  if(state==='playing') pauseGame();
+  else if(state==='paused') resumeGame();
+};
+document.getElementById('abilityBtn').addEventListener('click',e=>{
+  e.preventDefault();
+  e.stopPropagation();
+  initAudio();
+  tryUseAbility();
+}, {passive:true});
 document.getElementById('ngBtn').onclick=startNGPlus;
 document.getElementById('vmenuBtn').onclick=()=>{ngPlusLevel=0;dailyMode=false;hideAllOverlays();showMenu();};
 document.getElementById('rrRetryBtn').onclick=()=>{document.getElementById('runreport').classList.remove('show');if(dailyMode){dailyMode=false;}ngPlusLevel=0;showCharSelect();};
