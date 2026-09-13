@@ -571,8 +571,8 @@ function render(t){ctx.save();const shk=settings.shake?screenShake:0;if(shk>0)ct
  drawJoystick();if(damageFlash>0){ctx.fillStyle=`rgba(255,42,109,${damageFlash*.3})`;ctx.fillRect(0,0,VW,VH);}ctx.restore();ctx.restore();}
 
 // === КНОПКИ ===
-document.getElementById('startBtn').onclick=showCharSelect;
-document.getElementById('backBtn').onclick=backToMenu;
+document.getElementById('startBtn').onclick=()=>{initAudio();showCharSelect();};
+document.getElementById('backBtn').onclick=()=>{sfx('select');backToMenu();};
 document.getElementById('retryBtn').onclick=()=>{
   if(state!=='gameover')return;
   ngPlusLevel=0;dailyMode=false;hideAllOverlays();showCharSelect();
@@ -581,12 +581,12 @@ document.getElementById('goMenuBtn').onclick=()=>{
   if(state!=='gameover')return;
   ngPlusLevel=0;dailyMode=false;hideAllOverlays();showMenu();
 };
-document.getElementById('achBtn').onclick=showAchievements;
-document.getElementById('achBackBtn').onclick=backFromAch;
-document.getElementById('mktBtn').onclick=showMarket;
-document.getElementById('mktBackBtn').onclick=backFromMarket;
-document.getElementById('dailyBtn').onclick=showDailyIntro;
-document.getElementById('dailyStartBtn').onclick=()=>{hideAllOverlays();showCharSelect();};
+document.getElementById('achBtn').onclick=()=>{initAudio();showAchievements();};
+document.getElementById('achBackBtn').onclick=()=>{sfx('select');backFromAch();};
+document.getElementById('mktBtn').onclick=()=>{initAudio();showMarket();};
+document.getElementById('mktBackBtn').onclick=()=>{sfx('select');backFromMarket();};
+document.getElementById('dailyBtn').onclick=()=>{initAudio();showDailyIntro();};
+document.getElementById('dailyStartBtn').onclick=()=>{initAudio();hideAllOverlays();showCharSelect();};
 document.getElementById('dailyBackBtn').onclick=()=>{dailyMode=false;hideAllOverlays();showMenu();};
 document.getElementById('setBtn').onclick=()=>{initAudio();openSettingsFromMenu();};
 document.getElementById('resumeBtn').onclick=resumeGame;
