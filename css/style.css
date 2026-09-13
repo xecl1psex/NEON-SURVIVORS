@@ -90,8 +90,18 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 .btn-purple{border-color:var(--purple);color:var(--purple);background:linear-gradient(45deg,rgba(185,103,255,.15),rgba(5,217,232,.1))}
 .btn-purple:hover{background:var(--purple);color:var(--bg2);filter:drop-shadow(0 0 18px var(--purple))}
 .menu-buttons{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center}
-#pausemenu:not(.show) #restartBtn,
-#pausemenu:not(.show) #quitBtn{display:none!important}
+
+/* === ИСПРАВЛЕНИЕ: Кнопки паузы скрыты по умолчанию === */
+#restartBtn,
+#quitBtn{
+  display:none!important;
+}
+
+#pausemenu.show #restartBtn,
+#pausemenu.show #quitBtn{
+  display:inline-flex!important;
+}
+
 .credits{font-family:'Orbitron';font-size:20px;font-weight:700;color:var(--yellow);text-shadow:0 0 12px var(--yellow);margin:6px 0;letter-spacing:2px;display:flex;align-items:center;gap:8px}
 .char-grid{display:flex;gap:16px;margin-top:22px;flex-wrap:wrap;justify-content:center}
 .char-card{width:200px;padding:20px 16px;text-align:center;transition:all .25s;position:relative;overflow:hidden;cursor:pointer;background:linear-gradient(160deg,rgba(13,2,33,.92),rgba(1,1,43,.92));border:1px solid rgba(5,217,232,.3);clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px);}
