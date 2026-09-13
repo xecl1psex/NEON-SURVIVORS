@@ -1,8 +1,8 @@
 # NEON SURVIVORS
 
-> Выживи в цифровом аду. Кайберпанк-рогалик в браузере.
+> Выживи в цифровом аду. Киберпанк-рогалик в браузере.
 
-[![Играть](https://img.shields.io/badge/▶_ИГРАТЬ-xec1psex.github.io%2FNEON--SURVIVORS-05d9e8?style=for-the-badge)](https://xec1psex.github.io/NEON-SURVIVORS/)
+[![Играть](https://img.shields.io/badge/▶_ИГРАТЬ-xecl1psex.github.io%2FNEON--SURVIVORS-05d9e8?style=for-the-badge)](https://xecl1psex.github.io/NEON-SURVIVORS/)
 ![HTML](https://img.shields.io/badge/HTML-21.3%25-ff2a6d?style=flat-square)
 ![CSS](https://img.shields.io/badge/CSS-78.7%25-05d9e8?style=flat-square)
 ![JS](https://img.shields.io/badge/JavaScript-ES6+-ffd319?style=flat-square)
@@ -123,11 +123,11 @@
 ## 🚀 Как играть
 
 ### Онлайн
-Просто открой: **[xec1psex.github.io/NEON-SURVIVORS](https://xec1psex.github.io/NEON-SURVIVORS/)**
+Просто открой: **[xecl1psex.github.io/NEON-SURVIVORS](https://xecl1psex.github.io/NEON-SURVIVORS/)**
 
 ### Локально
 ```bash
-git clone https://github.com/xec1psex/NEON-SURVIVORS.git
+git clone https://github.com/xecl1psex/NEON-SURVIVORS.git
 cd NEON-SURVIVORS
 # Открой index.html в браузере, или запусти локальный сервер:
 python -m http.server 8000
