@@ -249,13 +249,19 @@ const PERKS=[
 let perkQueue=0;
 function openPerkMenu(){
   const remaining=PERKS.filter(pk=>!player.perksTaken.includes(pk.id));
-  if(!remaining.length){perkQueue=0;player.hp=Math.min(player.maxHp+30,player.hp+30);state='playing';document.getElementById('abilities').classList.add('show');return;}
+  if(!remaining.length){perkQueue=0;player.hp=Math.min(player.maxHp+30,player.hp+30);state='playing';
+    document.body.classList.add('state-playing');
+    document.body.classList.remove('state-paused');
+    document.getElementById('abilities').classList.add('show');return;}
   state='perks';
   const opts=remaining.sort(()=>Math.random()-.5).slice(0,3);
   const c=document.getElementById('perkOptions');c.innerHTML='';
   opts.forEach(pk=>{const d=document.createElement('div');d.className='opt new';
     d.innerHTML=`<div class="ic">${icon(pk.icon,36)}</div><div class="nm">${pk.name}</div><div class="ds">${pk.desc}</div><div class="tag">ИМПЛАНТ</div>`;
-    d.onclick=()=>{pk.apply(player);player.perksTaken.push(pk.id);if(pk.id==='vacuum')player.perks.vacuum=true;perkQueue--;updateAchProgress('perks',player.perksTaken.length);hideAllOverlays();sfx('evo');updatePerkHud();recalcMagnetRange();state='playing';document.getElementById('abilities').classList.add('show');};
+    d.onclick=()=>{pk.apply(player);player.perksTaken.push(pk.id);if(pk.id==='vacuum')player.perks.vacuum=true;perkQueue--;updateAchProgress('perks',player.perksTaken.length);hideAllOverlays();sfx('evo');updatePerkHud();recalcMagnetRange();state='playing';
+      document.body.classList.add('state-playing');
+      document.body.classList.remove('state-paused');
+      document.getElementById('abilities').classList.add('show');};
     c.appendChild(d);});
   hideAllOverlays();document.getElementById('perkmenu').classList.add('show');
 }
@@ -364,10 +370,10 @@ function pauseGame(){
   hideAllOverlays();
   document.getElementById('pausemenu').classList.add('show');
   document.getElementById('pauseTitle').textContent='ПАУЗА';
+  // Добавляем класс на body для показа кнопок через CSS
+  document.body.classList.add('state-paused');
+  document.body.classList.remove('state-playing');
   // Показать кнопки паузы, скрыть кнопку настроек
-  document.getElementById('resumeBtn').style.display='inline-block';
-  document.getElementById('restartBtn').style.display='inline-block';
-  document.getElementById('quitBtn').style.display='inline-block';
   document.getElementById('settingsButtons').style.display='none';
   Music.stop();
   syncSettingsUI();
@@ -376,6 +382,9 @@ function resumeGame(){
   if(state!=='paused')return;
   state='playing';
   hideAllOverlays();
+  // Убираем класс паузы, добавляем класс игры
+  document.body.classList.remove('state-paused');
+  document.body.classList.add('state-playing');
   if(actx)Music.start();
 }
 function openSettingsFromMenu(){
@@ -444,7 +453,11 @@ function buildCharGrid(){const grid=document.getElementById('charGrid');grid.inn
 function startGame(charKey){try{if(!unlockedChars.has(charKey))return;initAudio();sfx('select');player=makePlayer(charKey);enemies=[];bullets=[];xpOrbs=[];particles=[];eBullets=[];bosses=[];wave=1;waveTimer=0;waveDuration=25;gameTime=0;kills=0;bossKills=0;hackCount=0;screenShake=0;damageFlash=0;dmgBonusTimer=0;comboCount=0;comboMultiplier=1;comboTimer=0;comboMax=1;eventTimer=40;activeEvent=null;terminal=null;runBonusCredits=0;perkQueue=0;joy.active=false;currentBiome=0;setBiomeHUD(0);abilityCooldowns={};prevLevelForUnlock=1;unlockToastTimer=0;evoToastTimer=0;achToastTimer=0;bonusToastTimer=0;evolvedSet=new Set();runAchievementsChecked=new Set();totalStats.games++;isVictory=false;
  hideAllOverlays();document.getElementById('bossbar').style.display='none';document.getElementById('eventHud').style.display='none';['unlocktoast','evotoast','achtoast','bonustoast'].forEach(id=>document.getElementById(id).classList.remove('show'));document.getElementById('dmgbonus').style.display='none';document.getElementById('combo').classList.remove('show','break');document.getElementById('combo-indicator').style.display='none';
  if(ngPlusLevel>0){const ng=document.getElementById('ngHud');ng.style.display='block';ng.textContent='NG+'+ngPlusLevel;}else document.getElementById('ngHud').style.display='none';
- const ch=CHARACTERS[charKey];document.getElementById('charname').innerHTML=icon(ch.icon,14,ch.color)+`<span style="color:${ch.color};text-shadow:0 0 6px ${ch.color}">${ch.name}</span>`;updateWeaponsUI();buildAbilitiesUI();updatePerkHud();startTelemetry();state='playing';Music.start();}catch(e){crash(e);}}
+ const ch=CHARACTERS[charKey];document.getElementById('charname').innerHTML=icon(ch.icon,14,ch.color)+`<span style="color:${ch.color};text-shadow:0 0 6px ${ch.color}">${ch.name}</span>`;updateWeaponsUI();buildAbilitiesUI();updatePerkHud();startTelemetry();state='playing';
+  // Устанавливаем класс состояния игры
+  document.body.classList.add('state-playing');
+  document.body.classList.remove('state-paused');
+  Music.start();}catch(e){crash(e);}}
 function triggerVictory(){
   isVictory=true;sfx('victory');
   const earned=calcCredits()*(achUnlocked['ng3']?2:1);credits+=earned;saveCredits();
@@ -508,7 +521,13 @@ function damagePlayer(dmg){if(player.invuln>0)return;player.hp-=Math.max(1,dmg-p
 function generateUpgrades(){const pool=[];for(const k in WEAPONS){const w=WEAPONS[k];if(w.evo)continue;const cur=player.weapons[k]||0;if(cur<w.maxLvl){const owned=cur>0,nl=cur+1;pool.push({new:!owned,name:w.name+(owned?' ур.'+nl:''),icon:w.icon,desc:w.desc+(owned?' (улучшение)':' (новое!)'),tag:owned?'АПГРЕЙД':'НОВОЕ',apply:()=>{player.weapons[k]=nl;}});}}for(const k in PASSIVES){const cur=player.passives[k]||0;if(cur<PASSIVES[k].max)pool.push({new:cur===0,name:PASSIVES[k].name+(cur>0?' ур.'+(cur+1):''),icon:PASSIVES[k].icon,desc:PASSIVES[k].desc,tag:cur>0?'АПГРЕЙД':'НОВОЕ',apply:()=>{player.passives[k]=(player.passives[k]||0)+1;applyPassive(k);recalcMagnetRange();}});}return pool.sort(()=>Math.random()-.5).slice(0,3);}
 function applyPassive(k){const l=player.passives[k];if(k==='might')player.dmgMult=1+l*.15;if(k==='speed')player.speedMult=1+l*.10;if(k==='maxhp'){player.maxHp+=20*l;player.hp=player.maxHp;}if(k==='firerate')player.fireRateMult=Math.pow(.9,l);if(k==='magnet'){/* Магнит теперь рассчитывается в recalcMagnetRange */}if(k==='regen')player.regen=(player.charKey==='monk'?.5:0)+l*.5;if(k==='crit')player.critChance=l*.05;if(k==='armor')player.armor=l;}
 function recalcMagnetRange(){if(!player||!player.passives)return;let base=80,mult=1;const ml=player.passives.magnet||0;if(ml>0)mult*=1+ml*.5;const marketMagnetLvl=marketLevels['magnet']||0;if(marketMagnetLvl>0)mult*=1+0.10*marketMagnetLvl;if(player.perks&&player.perks.vacuum)mult*=2;player.magnetRange=base*mult;}
-function showLevelUp(){state='levelup';const opts=generateUpgrades(),c=document.getElementById('options');c.innerHTML='';if(!opts.length){const d=document.createElement('div');d.className='opt';d.innerHTML=`<div class="ic">${icon('heart',36)}</div><div class="nm">+50 HP</div><div class="ds">Всё прокачано</div><div class="tag">БОНУС</div>`;d.onclick=()=>{player.hp=Math.min(player.maxHp+50,player.hp+50);player.maxHp+=50;hideAllOverlays();sfx('lvl');state='playing';document.getElementById('abilities').classList.add('show');updateAbilitiesUI();};c.appendChild(d);}else opts.forEach(o=>{const d=document.createElement('div');d.className='opt'+(o.new?' new':'');d.innerHTML=`<div class="ic">${icon(o.icon,36)}</div><div class="nm">${o.name}</div><div class="ds">${o.desc}</div><div class="tag">${o.tag}</div>`;d.onclick=()=>{o.apply();hideAllOverlays();sfx('lvl');state='playing';document.getElementById('abilities').classList.add('show');updateWeaponsUI();updateAbilitiesUI();checkEvolutions();};c.appendChild(d);});hideAllOverlays();document.getElementById('levelup').classList.add('show');}
+function showLevelUp(){state='levelup';const opts=generateUpgrades(),c=document.getElementById('options');c.innerHTML='';if(!opts.length){const d=document.createElement('div');d.className='opt';d.innerHTML=`<div class="ic">${icon('heart',36)}</div><div class="nm">+50 HP</div><div class="ds">Всё прокачано</div><div class="tag">БОНУС</div>`;d.onclick=()=>{player.hp=Math.min(player.maxHp+50,player.hp+50);player.maxHp+=50;hideAllOverlays();sfx('lvl');state='playing';
+      document.body.classList.add('state-playing');
+      document.body.classList.remove('state-paused');
+      document.getElementById('abilities').classList.add('show');updateAbilitiesUI();};c.appendChild(d);}else opts.forEach(o=>{const d=document.createElement('div');d.className='opt'+(o.new?' new':'');d.innerHTML=`<div class="ic">${icon(o.icon,36)}</div><div class="nm">${o.name}</div><div class="ds">${o.desc}</div><div class="tag">${o.tag}</div>`;d.onclick=()=>{o.apply();hideAllOverlays();sfx('lvl');state='playing';
+        document.body.classList.add('state-playing');
+        document.body.classList.remove('state-paused');
+        document.getElementById('abilities').classList.add('show');updateWeaponsUI();updateAbilitiesUI();checkEvolutions();};c.appendChild(d);});hideAllOverlays();document.getElementById('levelup').classList.add('show');}
 function updateWeaponsUI(){const c=document.getElementById('weapons');c.innerHTML='';if(!player)return;for(const k in player.weapons){const w=WEAPONS[k],d=document.createElement('div');d.className='wslot'+(w.evo?' evo':'');d.innerHTML=icon(w.icon,24)+`<span class="lvl">${player.weapons[k]}</span>`;d.title=w.name;c.appendChild(d);}}
 function buildAchGrid(){const grid=document.getElementById('achGrid');grid.innerHTML='';document.getElementById('achStats').innerHTML=`<h3>// ОБЩАЯ СТАТИСТИКА //</h3><div class="stat-row"><span>Всего игр:</span><span class="stat-val">${totalStats.games}</span></div><div class="stat-row"><span>Всего убийств:</span><span class="stat-val">${totalStats.kills}</span></div><div class="stat-row"><span>Всего времени:</span><span class="stat-val">${fmtTime(totalStats.time)}</span></div><div class="stat-row"><span>Всего боссов:</span><span class="stat-val">${totalStats.bosses}</span></div><div class="stat-row"><span>Побед:</span><span class="stat-val">${totalStats.victories}</span></div><div class="stat-row"><span>Макс. NG+:</span><span class="stat-val">${totalStats.ngMax}</span></div><div class="stat-row"><span>Достижений:</span><span class="stat-val">${Object.keys(achUnlocked).length} / ${ACHIEVEMENTS.length}</span></div>`;ACHIEVEMENTS.forEach(a=>{const un=achUnlocked[a.id],pr=achProgress[a.id]||0,pct=Math.min(100,pr/a.target*100);const card=document.createElement('div');card.className='ach-card'+(un?' unlocked':' locked-ach');card.innerHTML=`<div class="ach-icon">${icon(a.icon,26)}</div><div class="ach-name">${a.name}</div><div class="ach-desc">${a.desc}</div><div class="ach-progress">${pr} / ${a.target}</div><div class="ach-bar"><div class="ach-fill" style="width:${pct}%"></div></div><div class="ach-reward">+ ${a.reward}</div>${un?'<div class="ach-check">OK</div>':''}`;grid.appendChild(card);});}
 function showRunReport(won){

@@ -98,27 +98,27 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 .btn-purple:hover{background:var(--purple);color:var(--bg2);filter:drop-shadow(0 0 18px var(--purple))}
 .menu-buttons{display:flex;gap:12px;margin-top:18px;flex-wrap:wrap;justify-content:center}
 
-/* === ИСПРАВЛЕНО: кнопки паузы скрыты по умолчанию === */
+/* === Кнопки паузы: управление видимостью через JS === */
 #resumeBtn,
 #restartBtn,
 #quitBtn{
-  display:none!important;
+  display:none;
 }
 
-/* Показываем ТОЛЬКО в состоянии паузы */
+/* Показываем ТОЛЬКО в состоянии паузы через класс на body */
 body.state-paused #resumeBtn,
 body.state-paused #restartBtn,
 body.state-paused #quitBtn{
-  display:inline-flex!important;
+  display:inline-flex;
 }
 
 /* Двойная защита: во время игры эти кнопки не видны никогда */
 body.state-playing #resumeBtn,
 body.state-playing #restartBtn,
 body.state-playing #quitBtn{
-  display:none!important;
-  visibility:hidden!important;
-  pointer-events:none!important;
+  display:none;
+  visibility:hidden;
+  pointer-events:none;
 }
 
 .credits{font-family:'Orbitron';font-size:20px;font-weight:700;color:var(--yellow);text-shadow:0 0 12px var(--yellow);margin:6px 0;letter-spacing:2px;display:flex;align-items:center;gap:8px}
