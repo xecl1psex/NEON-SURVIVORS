@@ -247,13 +247,13 @@ const PERKS=[
 let perkQueue=0;
 function openPerkMenu(){
   const remaining=PERKS.filter(pk=>!player.perksTaken.includes(pk.id));
-  if(!remaining.length){perkQueue=0;player.hp=Math.min(player.maxHp+30,player.hp+30);return;}
+  if(!remaining.length){perkQueue=0;player.hp=Math.min(player.maxHp+30,player.hp+30);state='playing';document.getElementById('abilities').classList.add('show');return;}
   state='perks';
   const opts=remaining.sort(()=>Math.random()-.5).slice(0,3);
   const c=document.getElementById('perkOptions');c.innerHTML='';
   opts.forEach(pk=>{const d=document.createElement('div');d.className='opt new';
     d.innerHTML=`<div class="ic">${icon(pk.icon,36)}</div><div class="nm">${pk.name}</div><div class="ds">${pk.desc}</div><div class="tag">ИМПЛАНТ</div>`;
-    d.onclick=()=>{pk.apply(player);player.perksTaken.push(pk.id);perkQueue--;updateAchProgress('perks',player.perksTaken.length);hideAllOverlays();sfx('evo');updatePerkHud();state='playing';};
+    d.onclick=()=>{pk.apply(player);player.perksTaken.push(pk.id);perkQueue--;updateAchProgress('perks',player.perksTaken.length);hideAllOverlays();sfx('evo');updatePerkHud();state='playing';document.getElementById('abilities').classList.add('show');};
     c.appendChild(d);});
   hideAllOverlays();document.getElementById('perkmenu').classList.add('show');
 }
