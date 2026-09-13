@@ -11,7 +11,7 @@ svg.ic{display:inline-block;vertical-align:middle;filter:drop-shadow(0 0 4px cur
 @keyframes band{0%{top:-20%}100%{top:120%}}
 #vignette{position:fixed;inset:0;pointer-events:none;z-index:59;background:radial-gradient(ellipse at center,transparent 52%,rgba(13,2,33,.65) 100%);}
 #hitstop{position:fixed;inset:0;pointer-events:none;z-index:55;opacity:0;transition:opacity .03s;}
-#hitstop.on{opacity:1;background:rgba(255,255,255,.08);}
+#hitstop.on{opacity:1;background:rgba(255,255,255,.02);}
 
 /* === HUD === */
 #ui{position:fixed;top:calc(12px + env(safe-area-inset-top));left:calc(12px + env(safe-area-inset-left));font-size:13px;pointer-events:none;background:var(--panel);border:1px solid rgba(5,217,232,.4);padding:10px 14px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px));text-shadow:0 0 6px rgba(5,217,232,.6);}
