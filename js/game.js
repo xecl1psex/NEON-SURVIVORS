@@ -1,4 +1,3 @@
-
 const ICONS={
  pistol:'<path d="M3 9h13v4h-6l-2 4H5l2-4H3z"/><path d="M16 9h5"/>',
  shotgun:'<path d="M3 9h15v6H3z"/><path d="M8 15v4M13 9V6"/>',
@@ -491,6 +490,9 @@ function loop(now){const dt=Math.min((now-last)/1000,.05);last=now;
   try{if(state==='playing')update(dt);}catch(err){crash(err);state='paused';}
   if(state==='playing'||state==='menu'||state==='charselect'||state==='achievements'||state==='settings'||state==='market')renderT=now/1000;
   try{render(renderT);}catch(err){console.error(err);}
+  /* === ИСПРАВЛЕНО: переключаем классы body для CSS-защиты кнопок паузы === */
+  document.body.classList.toggle('state-playing', state==='playing');
+  document.body.classList.toggle('state-paused',  state==='paused');
   const inGame=state==='playing';document.getElementById('abilityBtn').classList.toggle('show',isTouch&&inGame);document.getElementById('pauseBtn').classList.toggle('show',inGame);requestAnimationFrame(loop);}
 function update(dt){if(!player)return;if(perkQueue>0){openPerkMenu();return;}gameTime+=dt;player.invuln=Math.max(0,player.invuln-dt);player.shieldTime=Math.max(0,player.shieldTime-dt);damageFlash=Math.max(0,damageFlash-dt);screenShake=Math.max(0,screenShake-dt*20);if(player.regen>0)player.hp=Math.min(player.maxHp,player.hp+player.regen*dt);if(!isFinite(player.x)||!isFinite(player.y)){player.x=VW/2;player.y=VH/2;}if(!isFinite(player.xpNeeded)||player.xpNeeded<=0)player.xpNeeded=10;
  if(dmgBonusTimer>0){dmgBonusTimer-=dt;const el=document.getElementById('dmgbonus');el.innerHTML=icon('swordup',14)+'<span>УРОН x2: '+Math.ceil(dmgBonusTimer)+'с</span>';if(dmgBonusTimer<=0){el.style.display='none';showBonusToast('swordup','Бонус урона закончился','','#76ff03');}}
@@ -633,4 +635,3 @@ function injectStaticIcons(){
  document.getElementById('controlsText').innerHTML=isTouch?'<b>Слева</b> — виртуальный джойстик &nbsp;|&nbsp; <b>Тап справа</b> — способность<br>Атака автоматическая • Боссы каждые 5 волн • Пауза — кнопка ⏸<br>Импланты каждые 5 уровней • Взламывай терминалы':'<b>WASD</b> — движение &nbsp;|&nbsp; <b>SPACE</b> — способность &nbsp;|&nbsp; <b>ESC</b> — пауза<br>Атака автоматическая • Боссы каждые 5 волн • Районы каждые 5 волн<br>Импланты каждые 5 уровней • Взламывай терминалы';
 }
 loadSettings();loadUnlockedChars();loadAchievements();loadMarket();bindSettings();syncSettingsUI();injectStaticIcons();resizeCanvas();requestAnimationFrame(loop);
-
