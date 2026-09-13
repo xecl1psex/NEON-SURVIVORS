@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>NEON SURVIVORS // CYBERPUNK</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/orbitron@latest/latin-700-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/orbitron@latest/latin-900-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/fonts/share-tech-mono@latest/latin-400-normal.css">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<canvas id="game" width="960" height="600"></canvas>
+<div id="vignette"></div><div id="scanlines"></div><div id="scanband"></div><div id="hitstop"></div>
+
+<!-- HUD -->
+<div id="ui">
+  <div>HP: <span id="hp">100</span>/<span id="mhp">100</span></div>
+  <div class="bar"><div id="hpfill" class="fill" style="width:100%"></div></div>
+  <div style="margin-top:7px">LVL <span id="lvl">1</span> — XP</div>
+  <div class="bar"><div id="xpfill" class="fill" style="width:0%"></div></div>
+</div>
+<div id="timer">00:00</div>
+<div id="kills">KILLS: <span id="killcount">0</span></div>
+<div id="charname"></div>
+<div id="biome"></div>
+<div id="dmgbonus"></div>
+<div id="combo-indicator"><div>x<span id="comboMultSmall">1</span></div><div class="bar"><div class="fill" id="comboTimerFill" style="width:100%"></div></div></div>
+<div id="perkHud"></div>
+<div id="ngHud"></div>
+<div id="weapons"></div>
+<div id="bossbar"><div class="name" id="bossname"></div><div class="bar"><div id="bossfill" class="fill" style="width:100%"></div></div></div>
+<div id="abilities"></div>
+<div id="eventHud"></div>
+<button id="abilityBtn"></button>
+<button id="pauseBtn">⏸</button>
+
+<!-- COMBO -->
+<div id="combo"><div class="mult" id="comboMult">x2</div><div class="label">COMBO</div></div>
+
+<!-- TOASTS -->
+<div id="unlocktoast" class="toast"><span class="big" id="uticon"></span><span id="uttext"></span></div>
+<div id="evotoast" class="toast"><span class="big" id="etoicon"></span><span id="etotext"></span><div class="sub" id="etosub"></div></div>
+<div id="achtoast" class="toast"><span class="big" id="achticon"></span><span id="achttext"></span><div class="sub" id="achtsub"></div></div>
+<div id="bonustoast" class="toast"><span class="big" id="bticon"></span><span id="bttext"></span><div class="sub" id="btsub"></div></div>
+
+<!-- CRASH -->
+<div id="crashbox"><div style="font-size:26px">СИСТЕМНЫЙ СБОЙ</div><div id="crashmsg" style="font-family:'Share Tech Mono';font-size:13px;color:#d1f7ff;margin-bottom:10px"></div></div>
+
+<!-- MAIN MENU -->
+<div id="menu" class="overlay show">
+  <h1 class="glitch" data-text="NEON SURVIVORS">NEON SURVIVORS</h1>
+  <h2>// ВЫЖИВИ В НЕОНОВОЙ СЕТКЕ //</h2>
+  <div class="credits" id="creditsMenu"></div>
+  <p>Убивай врагов • Собирай опыт • Прокачивай оружие</p>
+  <div class="controls" id="controlsText"></div>
+  <div class="menu-buttons">
+    <button class="btn" id="startBtn">НАЧАТЬ</button>
+    <button class="btn btn-small btn-purple" id="dailyBtn">ЕЖЕДНЕВНОЕ</button>
+    <button class="btn btn-small btn-pink" id="mktBtn">РЫНОК</button>
+    <button class="btn btn-small btn-pink" id="achBtn">ДОСТИЖЕНИЯ</button>
+    <button class="btn btn-small btn-dim" id="setBtn">НАСТРОЙКИ</button>
+  </div>
+  <div class="board" id="board"></div>
+</div>
+
+<!-- MARKET -->
+<div id="market" class="overlay">
+  <h1 class="glitch" data-text="ЧЁРНЫЙ РЫНОК" style="font-size:40px">ЧЁРНЫЙ РЫНОК</h1>
+  <div class="credits" id="mktCredits"></div>
+  <p>Перманентные импланты — работают во всех забегах навсегда</p>
+  <div class="mkt-grid" id="mktGrid"></div>
+  <button class="btn btn-dim" style="margin-top:16px" id="mktBackBtn">НАЗАД</button>
+</div>
+
+<!-- CHAR SELECT -->
+<div id="charselect" class="overlay">
+  <h1 class="glitch" data-text="ВЫБОР ГЕРОЯ" style="font-size:42px">ВЫБОР ГЕРОЯ</h1>
+  <p style="margin-bottom:8px">Каждый герой уникален — взломай их всех</p>
+  <div class="char-grid" id="charGrid"></div>
+  <button class="btn btn-dim" style="margin-top:22px" id="backBtn">НАЗАД</button>
+</div>
+
+<!-- ACHIEVEMENTS -->
+<div id="achievements" class="overlay">
+  <h1 class="glitch" data-text="ДОСТИЖЕНИЯ" style="font-size:42px">ДОСТИЖЕНИЯ</h1>
+  <p>Выполняй задачи — получай награды и открывай героев</p>
+  <div class="ach-stats" id="achStats"></div>
+  <div class="ach-grid" id="achGrid"></div>
+  <button class="btn btn-dim" style="margin-top:18px" id="achBackBtn">НАЗАД</button>
+</div>
+
+<!-- LEVEL UP -->
+<div id="levelup" class="overlay">
+  <h1 class="glitch" data-text="LEVEL UP" style="font-size:50px">LEVEL UP</h1>
+  <h2>ВЫБЕРИ УЛУЧШЕНИЕ</h2>
+  <div class="opts" id="options"></div>
+</div>
+
+<!-- PERKS -->
+<div id="perkmenu" class="overlay">
+  <h1 class="glitch" data-text="ИМПЛАНТАЦИЯ" style="font-size:44px;color:var(--purple);text-shadow:0 0 10px var(--purple),0 0 40px rgba(185,103,255,.6),3px 3px 0 rgba(5,217,232,.7)">ИМПЛАНТАЦИЯ</h1>
+  <h2>Вживи имплант (каждые 5 уровней)</h2>
+  <div class="opts" id="perkOptions"></div>
+</div>
+
+<!-- PAUSE MENU -->
+<div id="pausemenu" class="overlay">
+  <h1 class="glitch" data-text="PAUSE" style="font-size:46px">ПАУЗА</h1>
+  <div class="settings-box" style="min-width:300px">
+    <h3>// НАСТРОЙКИ //</h3>
+    <div class="set-row"><span>МУЗЫКА</span><input type="checkbox" id="sMusicOn"><span class="set-val" id="vMusicOn"></span></div>
+    <div class="set-row"><span>ГРОМКОСТЬ МУЗЫКИ</span><input type="range" id="sMusicVol" min="0" max="100"><span class="set-val" id="vMusicVol"></span></div>
+    <div class="set-row"><span>ГРОМКОСТЬ ЗВУКОВ</span><input type="range" id="sSfxVol" min="0" max="100"><span class="set-val" id="vSfxVol"></span></div>
+    <div class="set-row"><span>ТРЯСКА ЭКРАНА</span><input type="checkbox" id="sShake"><span class="set-val" id="vShake"></span></div>
+    <div class="set-row"><span>ЧАСТИЦЫ</span><select id="sPart"><option value="0.4">МИНИМУМ</option><option value="1">СРЕДНЕ</option><option value="1.6">МАКСИМУМ</option></select></div>
+  </div>
+  <div class="menu-buttons">
+    <button class="btn" id="resumeBtn">ПРОДОЛЖИТЬ</button>
+    <button class="btn btn-pink" id="restartBtn">ЗАНОВО</button>
+    <button class="btn btn-dim" id="quitBtn">В МЕНЮ</button>
+  </div>
+</div>
+
+<!-- GAME OVER -->
+<div id="gameover" class="overlay">
+  <h1 class="glitch" data-text="GAME OVER" style="color:var(--pink);text-shadow:0 0 10px var(--pink),0 0 40px rgba(255,42,109,.6),3px 3px 0 rgba(5,217,232,.7)">GAME OVER</h1>
+  <p style="font-size:18px;color:#fff;margin-top:18px">ВРЕМЯ: <span id="stime">00:00</span></p>
+  <p style="font-size:18px;color:#fff">ВОЛНА: <span id="swave">1</span></p>
+  <p style="font-size:18px;color:#fff">УРОВЕНЬ: <span id="slvl">1</span></p>
+  <p style="font-size:18px;color:#fff">УБИЙСТВ: <span id="skills">0</span></p>
+  <p style="font-size:17px;color:var(--yellow);margin-top:10px;text-shadow:0 0 8px var(--yellow)">ДОБЫТО: <span id="gcredits">+0</span> ED</p>
+  <p style="font-size:16px;color:var(--yellow);text-shadow:0 0 8px var(--yellow)">РЕКОРД: <span id="best">00:00</span></p>
+  <p style="font-size:16px;color:var(--pink);margin-top:6px;text-shadow:0 0 8px var(--pink)">МАКС. КОМБО: x<span id="scombo">1</span></p>
+  <div class="menu-buttons">
+    <button class="btn btn-pink" id="retryBtn">ЗАНОВО</button>
+    <button class="btn btn-dim" id="goMenuBtn">В МЕНЮ</button>
+  </div>
+</div>
+
+<!-- VICTORY -->
+<div id="victory" class="overlay">
+  <h1 class="glitch" data-text="ПРОТОКОЛ ВЫХОДА" style="color:var(--purple);text-shadow:0 0 10px var(--purple),0 0 40px rgba(185,103,255,.6),3px 3px 0 rgba(5,217,232,.7)">ПРОТОКОЛ ВЫХОДА</h1>
+  <h2 style="color:var(--cyan)">ВЫ ВЫШЛИ ИЗ СЕТИ</h2>
+  <p style="font-size:18px;color:#fff;margin-top:18px">ВРЕМЯ: <span id="vtime">00:00</span></p>
+  <p style="font-size:18px;color:#fff">УРОВЕНЬ: <span id="vlvl">1</span></p>
+  <p style="font-size:18px;color:#fff">УБИЙСТВ: <span id="vkills">0</span></p>
+  <p style="font-size:17px;color:var(--yellow);margin-top:10px;text-shadow:0 0 8px var(--yellow)">ДОБЫТО: <span id="vcredits">+0</span> ED</p>
+  <p style="font-size:16px;color:var(--purple);margin-top:6px;text-shadow:0 0 8px var(--purple)">NG+ УРОВЕНЬ: <span id="vng">0</span></p>
+  <div class="menu-buttons" style="margin-top:24px">
+    <button class="btn btn-purple" id="ngBtn">NEW GAME+</button>
+    <button class="btn btn-dim" id="vmenuBtn">В МЕНЮ</button>
+  </div>
+</div>
+
+<!-- DAILY INTRO -->
+<div id="dailyintro" class="overlay">
+  <h1 class="glitch" data-text="ЕЖЕДНЕВНОЕ ИСПЫТАНИЕ" style="font-size:40px;color:var(--purple);text-shadow:0 0 10px var(--purple)">ЕЖЕДНЕВНОЕ ИСПЫТАНИЕ</h1>
+  <div id="dailyInfo" style="text-align:center;margin:20px 0;font-size:14px;color:rgba(209,247,255,.8)"></div>
+  <div class="menu-buttons">
+    <button class="btn btn-purple" id="dailyStartBtn">НАЧАТЬ</button>
+    <button class="btn btn-dim" id="dailyBackBtn">НАЗАД</button>
+  </div>
+</div>
+
+<!-- RUN REPORT -->
+<div id="runreport">
+  <h1>РАЗБОР ЗАБЕГА</h1>
+  <h2 id="rrSubtitle"></h2>
+  <div class="report-grid">
+    <div class="report-card">
+      <h3>ОСНОВНЫЕ МЕТРИКИ</h3>
+      <div class="big" id="rrTime">00:00</div>
+      <div class="sub">Время выживания</div>
+      <div class="big" id="rrKills" style="margin-top:10px">0</div>
+      <div class="sub">Убийств</div>
+      <div class="big" id="rrLevel" style="margin-top:10px">1</div>
+      <div class="sub">Макс. уровень</div>
+    </div>
+    <div class="report-card">
+      <h3>ЭФФЕКТИВНОСТЬ</h3>
+      <div class="big" id="rrDps">0</div>
+      <div class="sub">Средний DPS</div>
+      <div class="big" id="rrCombo" style="margin-top:10px">x1</div>
+      <div class="sub">Макс. комбо</div>
+      <div class="big" id="rrCredits" style="margin-top:10px">+0</div>
+      <div class="sub">Заработано ED</div>
+    </div>
+    <div class="report-card" style="grid-column:1/-1">
+      <h3>УБИЙСТВА ПО ВРЕМЕНИ</h3>
+      <canvas id="rrKillsChart" width="860" height="120"></canvas>
+    </div>
+    <div class="report-card" style="grid-column:1/-1">
+      <h3>УРОН ПО ВРЕМЕНИ (DPS)</h3>
+      <canvas id="rrDpsChart" width="860" height="120"></canvas>
+    </div>
+    <div class="report-card" style="grid-column:1/-1">
+      <h3>БИЛД</h3>
+      <div class="report-build" id="rrBuild"></div>
+    </div>
+  </div>
+  <div class="report-buttons">
+    <button class="btn" id="rrRetryBtn">ЗАНОВО</button>
+    <button class="btn btn-dim" id="rrMenuBtn">В МЕНЮ</button>
+  </div>
+</div>
+
+<script src="js/game.js"></script>
+</body>
+</html>
